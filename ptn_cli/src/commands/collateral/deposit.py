@@ -193,9 +193,11 @@ async def deposit(
 
             if response is None:
                 console.print("[yellow]⚠️ API call failed[/yellow]")
+                return False
             else:
                 if response.get("successfully_processed"):
                     console.print("[green]✅ Collateral added successfully![/green]")
+                    return True
                 else:
                     error_message = (
                         response.get("error_message") or
@@ -203,12 +205,12 @@ async def deposit(
                         "An unknown error occurred."
                     )
                     console.print(f"[red]❌ Deposit failed: {error_message}[/red]")
+                    return False
 
         except Exception as api_error:
             console.print(f"[yellow]⚠️ API call failed: {api_error}[/yellow]")
+            return False
 
     except Exception as e:
         console.print(f"[red]❌ Error adding collateral: {e}[/red]")
         return False
-
-    return True

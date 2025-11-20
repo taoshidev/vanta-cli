@@ -71,19 +71,24 @@ async def withdraw(
             console.print("[red]❌ Failed to query withdrawal details[/red]")
             return False
 
-        # Display the detailed withdrawal information
-        drawdown = query_response.get("drawdown", 0)
-        slashed_amount = query_response.get("slashed_amount", 0)
-        withdrawal_amount = query_response.get("withdrawal_amount", amount)
-        new_balance = query_response.get("new_balance", 0)
+        if query_response.get("successfully_processed"):
+            # Display the detailed withdrawal information
+            drawdown = query_response.get("drawdown", 0)
+            slashed_amount = query_response.get("slashed_amount", 0)
+            withdrawal_amount = query_response.get("withdrawal_amount", amount)
+            new_balance = query_response.get("new_balance", 0)
 
-        console.print(f"\n[yellow]⚠️  Withdrawal Impact:[/yellow]")
-        console.print(f"\n[yellow]Values are approximate and may change depending on current drawdown.[/yellow]")
-        console.print(f"[cyan]Requested withdrawal:[/cyan] {amount} Theta")
-        console.print(f"[cyan]Current drawdown:[/cyan] {(1.0 - drawdown) * 100:.2f}%")
-        console.print(f"[cyan]Amount to be slashed:[/cyan] {slashed_amount} Theta")
-        console.print(f"[cyan]Net withdrawal amount:[/cyan] {withdrawal_amount} Theta")
-        console.print(f"[cyan]New balance after withdrawal:[/cyan] {new_balance} Theta")
+            console.print(f"\n[yellow]⚠️  Withdrawal Impact:[/yellow]")
+            console.print(f"\n[yellow]Values are approximate and may change depending on current drawdown.[/yellow]")
+            console.print(f"[cyan]Requested withdrawal:[/cyan] {amount} Theta")
+            console.print(f"[cyan]Current drawdown:[/cyan] {(1.0 - drawdown) * 100:.2f}%")
+            console.print(f"[cyan]Amount to be slashed:[/cyan] {slashed_amount} Theta")
+            console.print(f"[cyan]Net withdrawal amount:[/cyan] {withdrawal_amount} Theta")
+            console.print(f"[cyan]New balance after withdrawal:[/cyan] {new_balance} Theta")
+
+        else:
+            console.print(f"[red]❌ Query failed: {query_response.get('error')}[/red]")
+            return False
 
         # Step 2: Confirm with the user about the slashed amount
         if prompt:
