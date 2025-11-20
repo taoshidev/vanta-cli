@@ -87,13 +87,18 @@ async def withdraw(
             console.print(f"[cyan]New balance after withdrawal:[/cyan] {new_balance} Theta")
 
         else:
-            console.print(f"[red]❌ Query failed: {query_response.get('error')}[/red]")
+            error_message = (
+                    query_response.get("error_message") or
+                    query_response.get("error") or
+                    "An unknown error occurred."
+            )
+            console.print(f"[red]❌ Query failed: {error_message}[/red]")
             return False
 
         # Step 2: Confirm with the user about the slashed amount
         if prompt:
             if slashed_amount > 0:
-                confirm_slash = typer.confirm(f"\nThis withdrawal will result in {slashed_amount} Theta being slashed. Do you want to continue?")
+                confirm_slash = typer.confirm(f"\nThis withdrawal will result in approximately {slashed_amount} Theta being slashed. Do you want to continue?")
             else:
                 confirm_slash = typer.confirm(f"\nProceed with withdrawal of {withdrawal_amount} Theta?")
 
@@ -150,8 +155,9 @@ async def withdraw(
             console.print("[green]✅ Collateral withdrawal successful![/green]")
 
             # Show success panel
+            returned_amount = response.get("returned_amount")
             success_panel = Panel.fit(
-                f"🎉 Withdrawal completed!\nAmount: {amount}\nMiner: {coldkey.ss58_address}",
+                f"🎉 Withdrawal completed!\nAmount: {returned_amount}\nMiner: {coldkey.ss58_address}",
                 style="bold green",
                 border_style="green"
             )
