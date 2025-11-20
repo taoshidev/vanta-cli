@@ -18,6 +18,9 @@ from ptn_cli.src.commands.collateral import (
 from ptn_cli.src.commands.asset import (
     select as select_asset
 )
+from ptn_cli.src.commands.pop import (
+    generate_tree as pop_generate_tree
+)
 
 _epilog = "Made with [bold red]:heart:[/bold red] by The Proprieτary Trading Neτwork"
 
@@ -38,6 +41,21 @@ class PTNOptions:
         "--prompt",
         help="Whether to prompt for confirmation",
     )
+    data_file = typer.Option(
+        None,
+        "--path",
+        help="Path to the data.json file",
+    )
+    hotkey_opt = typer.Option(
+        None,
+        "--hotkey",
+        help="Miner's hotkey",
+    )
+    output_path = typer.Option(
+        None,
+        "--output",
+        help="Path where the tree.json file will be saved",
+    )
 
 
 
@@ -45,12 +63,14 @@ class PTNCLIManager(CLIManager):
 
     collateral_app: typer.Typer
     asset_app: typer.Typer
+    pop_app: typer.Typer
 
     def __init__(self):
         super().__init__()
 
         self.collateral_app = typer.Typer(epilog=_epilog)
         self.asset_app = typer.Typer(epilog=_epilog)
+        self.pop_app = typer.Typer(epilog=_epilog)
 
         self.app.add_typer(
             self.collateral_app,
@@ -62,6 +82,12 @@ class PTNCLIManager(CLIManager):
             self.asset_app,
             name="asset",
             short_help="Asset command for choosing asset",
+            no_args_is_help=True
+        )
+        self.app.add_typer(
+            self.pop_app,
+            name="pop",
+            short_help="Proof-of-Portfolio commands",
             no_args_is_help=True
         )
 
@@ -78,6 +104,10 @@ class PTNCLIManager(CLIManager):
         self.asset_app.command(
             "select", rich_help_panel="Asset class selection"
         )(self.asset_select)
+
+        self.pop_app.command(
+            "generate-tree", rich_help_panel="Proof-of-Portfolio"
+        )(self.pop_generate_tree)
 
     def collateral_list(
         self,
@@ -234,6 +264,31 @@ class PTNCLIManager(CLIManager):
                 network,
                 asset_choice,
                 prompt,
+                quiet,
+                verbose,
+                json_output
+            )
+        )
+
+    def pop_generate_tree(
+        self,
+        data_file: Optional[str] = PTNOptions.data_file,
+        hotkey: Optional[str] = PTNOptions.hotkey_opt,
+        output_path: Optional[str] = PTNOptions.output_path,
+        quiet: bool = Options.quiet,
+        verbose: bool = Options.verbose,
+        json_output: bool = Options.json_output,
+    ):
+        """
+        Generate a merkle tree for a miner using proof-of-portfolio
+        """
+        self.verbosity_handler(quiet, verbose, json_output)
+
+        return self._run_command(
+            pop_generate_tree.generate_tree(
+                data_file,
+                hotkey,
+                output_path,
                 quiet,
                 verbose,
                 json_output

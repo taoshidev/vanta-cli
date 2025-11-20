@@ -7,9 +7,7 @@ name = "ptn-cli"
 version = "1.0.5"
 description = "Proprietary Trading Network CLI"
 readme = "README.md"
-authors = [
-    {name = "taoshi.io" }
-]
+authors = [{ name = "taoshi.io" }]
 license = { file = "LICENSE" }
 scripts = { ptncli = "ptn_cli.ptncli:main" }
 requires-python = ">=3.9,<3.14"
@@ -19,7 +17,7 @@ dependencies = [
     "async-substrate-interface>=1.4.2",
     "aiohttp~=3.10.2",
     "backoff~=2.2.1",
-    "click<8.2.0",  # typer.testing.CliRunner(mix_stderr=) is broken in click 8.2.0+
+    "click<8.2.0",                                                                # typer.testing.CliRunner(mix_stderr=) is broken in click 8.2.0+
     "GitPython>=3.0.0",
     "netaddr~=1.3.0",
     "numpy>=2.0.1,<3.0.0",
@@ -32,17 +30,12 @@ dependencies = [
     "bittensor-wallet>=3.0.7",
     "plotille>=5.0.0",
     "plotly>=6.0.0",
+    "proof-of-portfolio>=0.0.14",
 ]
 
 [project.optional-dependencies]
-cuda = [
-    "torch>=1.13.1,<3.0",
-]
-dev = [
-    "pytest",
-    "pytest-asyncio",
-    "ruff==0.11.5",
-]
+cuda = ["torch>=1.13.1,<3.0"]
+dev = ["pytest", "pytest-asyncio", "ruff==0.11.5"]
 
 [project.urls]
 # more details can be found here
@@ -62,7 +55,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Utilities"
+    "Topic :: Utilities",
 ]
 
 [tool.setuptools]
