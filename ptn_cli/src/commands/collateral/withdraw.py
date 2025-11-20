@@ -80,7 +80,7 @@ async def withdraw(
         console.print(f"\n[yellow]⚠️  Withdrawal Impact:[/yellow]")
         console.print(f"\n[yellow]Values are approximate and may change depending on current drawdown.[/yellow]")
         console.print(f"[cyan]Requested withdrawal:[/cyan] {amount} Theta")
-        console.print(f"[cyan]Current drawdown:[/cyan] {drawdown}%")
+        console.print(f"[cyan]Current drawdown:[/cyan] {(1.0 - drawdown) * 100:.2f}%")
         console.print(f"[cyan]Amount to be slashed:[/cyan] {slashed_amount} Theta")
         console.print(f"[cyan]Net withdrawal amount:[/cyan] {withdrawal_amount} Theta")
         console.print(f"[cyan]New balance after withdrawal:[/cyan] {new_balance} Theta")
