@@ -42,11 +42,11 @@ async def deposit(
         source_stake: Any = manager.subtensor_api.staking.get_stake_for_coldkey(coldkey.ss58_address)
 
         progress.update(task, description="Checking Wallet Information...")
-        balance: Any = manager.balance_of(coldkey.ss58_address)
+        balance: Any = manager.balance_of(hotkey.ss58_address) / 10 ** 9
         progress.stop()
 
     # Create wallet info table
-    table_title = "Wallet Information"
+    table_title = "Current Collateral Balance"
     if network == 'test':
         table_title += " (testnet)"
 
@@ -68,7 +68,7 @@ async def deposit(
     # Add wallet information rows
     table.add_row("Coldkey Address", coldkey.ss58_address)
     table.add_row("Hotkey Address", hotkey.ss58_address)
-    table.add_row("Balance", balance_str)
+    table.add_row("Balance (Theta)", balance_str)
 
     console.print(table)
 
