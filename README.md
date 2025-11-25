@@ -10,14 +10,14 @@
 
 ## Note
 
-Vanta CLI is in beta and is still under active development. Please report any issues or feedback on the [Vanta CLI GitHub repository](https://github.com/taoshidev/vanta-cli).
+Vanta CLI is under active development. Please report any issues or feedback on the [Vanta CLI GitHub repository](https://github.com/taoshidev/vanta-cli).
 
 ### Process Flow
 From a high level, here is what happens to register with collateral on Vanta Network.
 
 1. Register your hotkey with Vanta Network: `vanta subnets register`
 2. Stake TAO into theta using your own hotkey: `vanta stake add`
-3. Collateral deposit, which under the hood signs an extensic and sends the command off to the super validator. The super validator will then transfer the amount specified into our smart contract: `vanta collateral deposit`
+3. Collateral deposit, which signs an extrinsic and sends the command off to the super validator. The super validator will then transfer the amount specified into the smart contract: `vanta collateral deposit`
 4. (Optional) View collateral amount tracked in the contract: `vanta collateral list`
 
 ## Installation
