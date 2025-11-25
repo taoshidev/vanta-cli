@@ -1,4 +1,4 @@
-![Screenshot](assets/vanta.png)
+![Screenshot](assets/ptncli.png)
 
 <div align="center">
 
