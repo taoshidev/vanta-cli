@@ -265,11 +265,6 @@ class VantaCLIManager(CLIManager):
         wallet_path: Optional[str] = Options.wallet_path,
         wallet_hotkey: Optional[str] = Options.wallet_hotkey_ss58,
         network: str = VantaOptions.vanta_network,
-        max_subaccounts: Optional[int] = typer.Option(
-            None,
-            "--max-subaccounts",
-            help="Maximum number of subaccounts (default 500)"
-        ),
         prompt: bool = VantaOptions.prompt,
         quiet: bool = Options.quiet,
         verbose: bool = Options.verbose,
@@ -289,14 +284,10 @@ class VantaCLIManager(CLIManager):
             validate=WV.WALLET_AND_HOTKEY,
         )
 
-        if max_subaccounts is None:
-            max_subaccounts = int(FloatPrompt.ask("Enter desired max number of subaccounts [500]", default=500))
-
         return self._run_command(
             register_entity.register(
                 wallet,
                 network,
-                max_subaccounts,
                 prompt,
                 quiet,
                 verbose,

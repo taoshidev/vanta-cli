@@ -16,7 +16,6 @@ from vanta_cli.src.utils.api import make_api_request
 async def register(
     wallet: Wallet,
     network: str,
-    max_subaccounts: int,
     prompt: bool,
     quiet: bool = False,
     verbose: bool = False,
@@ -56,7 +55,6 @@ async def register(
 
         config_table.add_row("Network", "Testnet" if network == "test" else "Mainnet")
         config_table.add_row("Registration Fee", f"{registration_fee} Theta")
-        config_table.add_row("Max Subaccounts", str(max_subaccounts))
 
         console.print(config_table)
 
@@ -73,7 +71,7 @@ async def register(
     # Step 3: Confirm registration
     if prompt:
         confirm = typer.confirm(
-            f"Register entity {hotkey.ss58_address} with {max_subaccounts} max subaccounts "
+            f"Register entity {hotkey.ss58_address} "
             f"(costs {registration_fee} Theta)?"
         )
         if not confirm:
@@ -106,8 +104,7 @@ async def register(
 
     registration_data = {
         "entity_coldkey": coldkey.ss58_address,
-        "entity_hotkey": hotkey.ss58_address,
-        "max_subaccounts": max_subaccounts
+        "entity_hotkey": hotkey.ss58_address
     }
 
     # Create message to sign (sorted JSON)
@@ -120,7 +117,6 @@ async def register(
     payload = {
         "entity_coldkey": coldkey.ss58_address,
         "entity_hotkey": hotkey.ss58_address,
-        "max_subaccounts": max_subaccounts,
         "signature": signature
     }
 
@@ -144,7 +140,6 @@ async def register(
             success_table.add_column("Value", style="green")
 
             success_table.add_row("Entity Hotkey", response.get('entity_hotkey'))
-            success_table.add_row("Max Subaccounts", str(response.get('max_subaccounts')))
             success_table.add_row("Fee Charged", f"{registration_fee} Theta")
 
             console.print(success_table)
