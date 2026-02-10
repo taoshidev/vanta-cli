@@ -107,7 +107,7 @@ async def register(
     registration_data = {
         "entity_coldkey": coldkey.ss58_address,
         "entity_hotkey": hotkey.ss58_address,
-        "max_subaccounts": max_subaccounts
+        # "max_subaccounts": max_subaccounts
     }
 
     # Create message to sign (sorted JSON)
@@ -120,7 +120,7 @@ async def register(
     payload = {
         "entity_coldkey": coldkey.ss58_address,
         "entity_hotkey": hotkey.ss58_address,
-        "max_subaccounts": max_subaccounts,
+        # "max_subaccounts": max_subaccounts,
         "signature": signature
     }
 
