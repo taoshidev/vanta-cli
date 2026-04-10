@@ -309,7 +309,7 @@ class VantaCLIManager(CLIManager):
         asset_class: Optional[str] = typer.Option(
             None,
             "--asset-class",
-            help="Asset class selection (crypto, forex, etc.)"
+            help="Asset class selection (crypto, forex, equities)"
         ),
         prompt: bool = VantaOptions.prompt,
         quiet: bool = Options.quiet,
@@ -336,7 +336,7 @@ class VantaCLIManager(CLIManager):
 
         # Prompt for asset_class if not provided
         if asset_class is None:
-            assets = ["crypto", "forex"]
+            assets = ["crypto", "forex", "equities"]
             console.print("\nAvailable asset classes:")
             for idx, asset in enumerate(assets, start=1):
                 console.print(f"{idx}. {asset}")

@@ -39,7 +39,7 @@ async def create_subaccount(
         wallet: Bittensor wallet instance
         network: Network to use ('test' or 'finney')
         account_size: Account size in USD
-        asset_class: Asset class selection ('crypto' or 'forex')
+        asset_class: Asset class selection ('crypto', 'forex', or 'equities')
         prompt: Whether to prompt for confirmation
         quiet: If True, suppresses all console output (for programmatic calls)
         verbose: Enable verbose logging
