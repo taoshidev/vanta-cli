@@ -1,0 +1,48 @@
+[build-system]
+requires = ["flit_core >=3.11,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "vanta-cli"
+version = "3.0.0"
+description = "Vanta Network CLI"
+readme = "README.md"
+authors = [
+    {name = "taoshi.io" }
+]
+license = "MIT"
+scripts = { vanta = "vanta_cli.vanta:main" }
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Utilities"
+]
+dependencies = [
+    "rich>=13.7,<15.0",
+    "typer>=0.16",
+    "bittensor-wallet==4.0.1",
+    "bittensor-cli==9.21.0",
+    "collateral_sdk @ git+https://github.com/taoshidev/collateral_sdk.git@1.0.9",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff==0.15.12",
+]
+
+[project.urls]
+# more details can be found here
+homepage = "https://github.com/taoshidev/vanta-cli"
+Repository = "https://github.com/taoshidev/vanta-cli"
