@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import Annotated, Optional
 
-from rich.prompt import FloatPrompt, IntPrompt, Prompt
-from bittensor_cli.cli import CLIManager, Options
+from rich.prompt import FloatPrompt, IntPrompt
+from bittensor_cli.cli import CLIManager, Options, version_callback
 from bittensor_cli.src import (
     WalletOptions as WO,
     WalletValidationTypes as WV,
@@ -9,6 +9,7 @@ from bittensor_cli.src import (
 from bittensor_cli.src.bittensor.utils import (
     console,
 )
+from rich.tree import Tree
 import typer
 from vanta_cli.src.commands.collateral import (
     list as list_collateral,
@@ -24,7 +25,26 @@ from vanta_cli.src.commands.entity import (
     apikey as apikey_entity,
 )
 
-_epilog = "Made with [bold red]:heart:[/bold red] by The Vanτa Neτwork"
+_epilog = "Made with [bold red]:heart:[/bold red] by Vanτa Neτwork"
+
+def vanta_version_callback(value: bool) -> None:
+    """
+    Prints the current version
+    """
+    if value:
+        typer.echo(f"Vanta CLI version: 3.0.0")
+        version_callback(value)
+        raise typer.Exit()
+
+def commands_callback(value: bool) -> None:
+    """
+    Prints a tree of commands for the app
+    """
+    if value:
+        cli = VantaCLIManager()
+        console.print(cli.generate_command_tree())
+        raise typer.Exit()
+
 
 class VantaOptions:
     vanta_network = typer.Option(
@@ -45,7 +65,6 @@ class VantaOptions:
     )
 
 
-
 class VantaCLIManager(CLIManager):
 
     collateral_app: typer.Typer
@@ -55,6 +74,10 @@ class VantaCLIManager(CLIManager):
     def __init__(self):
         super().__init__()
 
+        # Override btcli typer config
+        self.app.info.callback = self.vanta_main_callback
+        self.app.info.epilog = _epilog
+
         self.collateral_app = typer.Typer(epilog=_epilog)
         self.asset_app = typer.Typer(epilog=_epilog)
         self.entity_app = typer.Typer(epilog=_epilog)
@@ -62,19 +85,19 @@ class VantaCLIManager(CLIManager):
         self.app.add_typer(
             self.collateral_app,
             name="collateral",
-            short_help="Collateral commands, alias: `collateral`",
+            short_help="Vanta Network - Collateral operation commands",
             no_args_is_help=True
         )
         self.app.add_typer(
             self.asset_app,
             name="asset",
-            short_help="Asset command for choosing asset",
+            short_help="Vanta Network - Asset selection commands",
             no_args_is_help=True
         )
         self.app.add_typer(
             self.entity_app,
             name="entity",
-            short_help="Entity management commands",
+            short_help="Vanta Network - Entity management commands",
             no_args_is_help=True
         )
 
@@ -101,6 +124,62 @@ class VantaCLIManager(CLIManager):
         self.entity_app.command(
             "apikey", rich_help_panel="Entity Management"
         )(self.entity_apikey)
+
+    def generate_command_tree(self) -> Tree:
+        """
+        Generates a rich.Tree of the commands, subcommands, and groups of this app
+        """
+
+        def build_rich_tree(data: dict, parent: Tree) -> None:
+            for group, content in data.get("groups", {}).items():
+                group_node = parent.add(
+                    f"[bold cyan]{group}[/]"
+                )  # Add group to the tree
+                for command in content.get("commands", []):
+                    group_node.add(f"[green]{command}[/]")  # Add commands to the group
+                build_rich_tree(content, group_node)  # Recurse for subgroups
+
+        def traverse_group(group: typer.Typer) -> dict:
+            tree = {}
+            if commands := [
+                cmd.name for cmd in group.registered_commands if not cmd.hidden
+            ]:
+                tree["commands"] = commands
+            for group in group.registered_groups:
+                if "groups" not in tree:
+                    tree["groups"] = {}
+                if not group.hidden:
+                    if group_transversal := traverse_group(group.typer_instance):
+                        tree["groups"][group.name] = group_transversal
+
+            return tree
+
+        groups_and_commands = traverse_group(self.app)
+        root = Tree("[bold magenta]BTCLI Commands[/]")  # Root node
+        build_rich_tree(groups_and_commands, root)
+        return root
+
+    # Override btcli main callback
+    def vanta_main_callback(
+        self,
+        version: Annotated[
+            Optional[bool],
+            typer.Option(
+                "--version", callback=vanta_version_callback, help="Show Vanta and Bittensor CLI version"
+            ),
+        ] = None,
+        commands: Annotated[
+            Optional[bool],
+            typer.Option(
+                "--commands", callback=commands_callback, help="Show Vanta and Bittensor CLI commands"
+            ),
+        ] = None,
+    ):
+        """
+        Command line interface (CLI) for Bittensor subnet 8 Vanta Network. Uses the values in the configuration file. These values can be
+            overridden by passing them explicitly in the command line.
+        """
+        self.main_callback()
 
     def collateral_list(
         self,
@@ -399,10 +478,13 @@ class VantaCLIManager(CLIManager):
             )
         )
 
+    def vanta_run(self):
+        self.app()
+
 
 def main():
     manager = VantaCLIManager()
-    manager.run()
+    manager.vanta_run()
 
 if __name__ == "__main__":
     main()
