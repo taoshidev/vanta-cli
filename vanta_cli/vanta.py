@@ -1,6 +1,6 @@
 from typing import Annotated, Optional
 
-from rich.prompt import FloatPrompt, IntPrompt
+from rich.prompt import FloatPrompt, IntPrompt, Prompt
 from bittensor_cli.cli import CLIManager, Options, version_callback
 from bittensor_cli.src import (
     WalletOptions as WO,
@@ -23,6 +23,9 @@ from vanta_cli.src.commands.entity import (
     register as register_entity,
     create_subaccount as create_subaccount_entity,
     apikey as apikey_entity,
+)
+from vanta_cli.src.commands.profile import (
+    set as profile_set,
 )
 
 _epilog = "Made with [bold red]:heart:[/bold red] by Vanτa Neτwork"
@@ -70,6 +73,7 @@ class VantaCLIManager(CLIManager):
     collateral_app: typer.Typer
     asset_app: typer.Typer
     entity_app: typer.Typer
+    profile_app: typer.Typer
 
     def __init__(self):
         super().__init__()
@@ -81,6 +85,7 @@ class VantaCLIManager(CLIManager):
         self.collateral_app = typer.Typer(epilog=_epilog)
         self.asset_app = typer.Typer(epilog=_epilog)
         self.entity_app = typer.Typer(epilog=_epilog)
+        self.profile_app = typer.Typer(epilog=_epilog)
 
         self.app.add_typer(
             self.collateral_app,
@@ -98,6 +103,12 @@ class VantaCLIManager(CLIManager):
             self.entity_app,
             name="entity",
             short_help="Vanta Network - Entity management commands",
+            no_args_is_help=True
+        )
+        self.app.add_typer(
+            self.profile_app,
+            name="profile",
+            short_help="Vanta Network - Profile management commands",
             no_args_is_help=True
         )
 
@@ -124,6 +135,10 @@ class VantaCLIManager(CLIManager):
         self.entity_app.command(
             "apikey", rich_help_panel="Entity Management"
         )(self.entity_apikey)
+
+        self.profile_app.command(
+            "set", rich_help_panel="Profile Management"
+        )(self.profile_set)
 
     def generate_command_tree(self) -> Tree:
         """
@@ -475,6 +490,56 @@ class VantaCLIManager(CLIManager):
                 quiet,
                 verbose,
                 json_output,
+            )
+        )
+
+    def profile_set(
+        self,
+        wallet_name: Optional[str] = Options.wallet_name,
+        wallet_path: Optional[str] = Options.wallet_path,
+        wallet_hotkey: Optional[str] = Options.wallet_hotkey_ss58,
+        network: str = VantaOptions.vanta_network,
+        prompt: bool = VantaOptions.prompt,
+        quiet: bool = Options.quiet,
+        verbose: bool = Options.verbose,
+        json_output: bool = Options.json_output,
+    ):
+        """
+        Sets or updates profile configuration value on Vanta Network
+        """
+        self.verbosity_handler(quiet, verbose, json_output)
+
+        ask_for = [WO.NAME, WO.HOTKEY]
+        wallet = self.wallet_ask(
+            wallet_name,
+            wallet_path,
+            wallet_hotkey,
+            ask_for=ask_for,
+            validate=WV.WALLET_AND_HOTKEY,
+        )
+
+        console.print("\nWhich config setting would you like to update?\n")
+        profile_keys = ["display_name"]
+        for idx, key in enumerate(profile_keys, start=1):
+            console.print(f"{idx}. {key}")
+
+        choice = IntPrompt.ask(
+            "\nEnter the [bold]number[/bold] of the profile setting you want to update",
+            choices=[str(i) for i in range(1, len(profile_keys) + 1)],
+            show_choices=False,
+        )
+        profile_key = profile_keys[choice - 1]
+        value = Prompt.ask(
+            f"What value would you like to assign to [red]{profile_key}[/red]?"
+        )
+
+        return self._run_command(
+            profile_set.set(
+                wallet,
+                network,
+                profile_key,
+                value,
+                prompt,
             )
         )
 
