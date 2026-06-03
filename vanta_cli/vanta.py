@@ -81,6 +81,8 @@ class VantaCLIManager(CLIManager):
         # Override btcli typer config
         self.app.info.callback = self.vanta_main_callback
         self.app.info.epilog = _epilog
+        for a in self.app.registered_groups:
+            a.epilog = _epilog
 
         self.collateral_app = typer.Typer(epilog=_epilog)
         self.asset_app = typer.Typer(epilog=_epilog)
